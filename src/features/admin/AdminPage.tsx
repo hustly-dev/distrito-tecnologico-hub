@@ -59,7 +59,9 @@ export function AdminPage() {
     listNoticeFiles,
     uploadFilesToEdital,
     renameNoticeFile,
-    deleteNoticeFile
+    deleteNoticeFile,
+    ragSettings,
+    updateRagSettings
   } = useAdminPanel();
 
   const [activeTab, setActiveTab] = useState<"editais" | "agencias">("editais");
@@ -77,6 +79,9 @@ export function AdminPage() {
   const [feedback, setFeedback] = useState("");
   const [isAutofilling, setIsAutofilling] = useState(false);
   const [isUploadingFiles, setIsUploadingFiles] = useState(false);
+  const [isSavingRagSettings, setIsSavingRagSettings] = useState(false);
+  const [localRagLevel, setLocalRagLevel] = useState<"baixo" | "medio" | "alto">("medio");
+  const [localLegacyFallback, setLocalLegacyFallback] = useState(true);
 
   const agencyOptions = useMemo(
     () => agencias.map((agencia) => ({ value: agencia.id, label: `${agencia.sigla} - ${agencia.nome}` })),
@@ -118,6 +123,11 @@ export function AdminPage() {
     const start = (filesPage - 1) * FILES_PAGE_SIZE;
     return filteredNoticeFiles.slice(start, start + FILES_PAGE_SIZE);
   }, [filteredNoticeFiles, filesPage]);
+
+  useEffect(() => {
+    setLocalRagLevel(ragSettings.searchLevel);
+    setLocalLegacyFallback(ragSettings.useLegacyFallback);
+  }, [ragSettings]);
 
   useEffect(() => {
     if (!selectedNoticeId && editais.length > 0) setSelectedNoticeId(editais[0].id);
@@ -256,12 +266,60 @@ export function AdminPage() {
     }
   };
 
+  const handleSaveRagSettings = async () => {
+    setIsSavingRagSettings(true);
+    try {
+      await updateRagSettings({
+        searchLevel: localRagLevel,
+        useLegacyFallback: localLegacyFallback
+      });
+      setFeedback("Configuracoes de busca do RAG salvas.");
+    } catch {
+      setFeedback("Erro ao salvar configuracoes de busca do RAG.");
+    } finally {
+      setIsSavingRagSettings(false);
+    }
+  };
+
   return (
     <MainLayout agencias={agencias} isAdminRoute>
       <div className="space-y-5">
         <section className="rounded-mdx border border-district-border bg-white p-4 shadow-card dark:border-gray-700 dark:bg-gray-900 md:p-5">
           <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">Painel do administrador</h1>
           <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">Fluxo otimizado para criar, editar e excluir editais com arquivos e RAG.</p>
+          <div className="mt-4 grid gap-3 rounded-md border border-district-border p-3 dark:border-gray-700 sm:grid-cols-[1fr_auto_auto] sm:items-end">
+            <div>
+              <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                Nivel da busca RAG
+              </label>
+              <select
+                value={localRagLevel}
+                onChange={(event) => setLocalRagLevel(event.target.value as "baixo" | "medio" | "alto")}
+                className="h-10 w-full rounded-md border border-district-border bg-white px-3 text-sm text-gray-900 outline-none focus:border-district-red focus:ring-2 focus:ring-red-200 dark:border-gray-700 dark:bg-gray-950 dark:text-gray-100"
+              >
+                <option value="baixo">Baixo (mais estrito)</option>
+                <option value="medio">Medio (equilibrado)</option>
+                <option value="alto">Alto (mais abrangente)</option>
+              </select>
+            </div>
+            <label className="inline-flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">
+              <input
+                type="checkbox"
+                checked={localLegacyFallback}
+                onChange={(event) => setLocalLegacyFallback(event.target.checked)}
+                className="h-4 w-4 rounded border-district-border text-district-red focus:ring-red-200 dark:border-gray-700"
+              />
+              Fallback lexical/simples
+            </label>
+            <button
+              type="button"
+              onClick={handleSaveRagSettings}
+              disabled={isSavingRagSettings}
+              className="h-10 rounded-md border border-district-border px-4 text-sm font-semibold text-gray-700 transition hover:bg-gray-50 disabled:opacity-60 dark:border-gray-700 dark:text-gray-100 dark:hover:bg-gray-800"
+            >
+              {isSavingRagSettings ? "Salvando..." : "Salvar RAG"}
+            </button>
+          </div>
           {isLoading && <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">Carregando dados...</p>}
           {error && <p className="mt-3 rounded-md border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-800 dark:border-red-700 dark:bg-red-900/20 dark:text-red-200">{error}</p>}
           {feedback && <p className="mt-3 rounded-md border border-emerald-300 bg-emerald-50 px-3 py-2 text-sm text-emerald-800 dark:border-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-200">{feedback}</p>}
@@ -317,7 +375,33 @@ export function AdminPage() {
                 <input value={editalForm.nome} onChange={(event) => setEditalForm((prev) => ({ ...prev, nome: event.target.value }))} className="h-11 w-full rounded-md border border-district-border bg-white px-3 text-sm text-gray-900 outline-none focus:border-district-red focus:ring-2 focus:ring-red-200 dark:border-gray-700 dark:bg-gray-950 dark:text-gray-100" placeholder="Nome do edital" required />
                 <div className="flex items-center gap-2">
                   <input type="url" value={editalForm.linkAcesso} onChange={(event) => setEditalForm((prev) => ({ ...prev, linkAcesso: event.target.value }))} className="h-11 w-full rounded-md border border-district-border bg-white px-3 text-sm text-gray-900 outline-none focus:border-district-red focus:ring-2 focus:ring-red-200 dark:border-gray-700 dark:bg-gray-950 dark:text-gray-100" placeholder="Link de acesso do edital (https://...)" />
-                  <button type="button" onClick={handleAutofillFromLink} disabled={isAutofilling} className="h-11 shrink-0 rounded-md border border-district-border px-3 text-xs font-medium text-gray-700 transition hover:bg-gray-50 disabled:opacity-60 dark:border-gray-700 dark:text-gray-100 dark:hover:bg-gray-800">{isAutofilling ? "Lendo..." : "IA"}</button>
+                  <button
+                    type="button"
+                    onClick={handleAutofillFromLink}
+                    disabled={isAutofilling}
+                    aria-label={isAutofilling ? "Lendo link com IA" : "Preencher a partir do link com IA"}
+                    title={isAutofilling ? "Lendo link com IA" : "Preencher a partir do link com IA"}
+                    className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-md border border-district-border text-gray-700 transition hover:bg-gray-50 disabled:opacity-60 dark:border-gray-700 dark:text-gray-100 dark:hover:bg-gray-800"
+                  >
+                    {isAutofilling ? (
+                      <span className="text-[10px] font-medium">...</span>
+                    ) : (
+                      <svg
+                        aria-hidden="true"
+                        viewBox="0 0 24 24"
+                        className="h-4 w-4"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="1.8"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M12 3l1.4 3.6L17 8l-3.6 1.4L12 13l-1.4-3.6L7 8l3.6-1.4L12 3z" />
+                        <path d="M5 14l.9 2.1L8 17l-2.1.9L5 20l-.9-2.1L2 17l2.1-.9L5 14z" />
+                        <path d="M18 13l.9 2.1L21 16l-2.1.9L18 19l-.9-2.1L15 16l2.1-.9L18 13z" />
+                      </svg>
+                    )}
+                  </button>
                 </div>
 
                 <div className="grid gap-3 sm:grid-cols-2">

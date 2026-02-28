@@ -30,10 +30,19 @@ GROQ_API_KEY=sua_chave_groq
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
 SUPABASE_SERVICE_ROLE_KEY=
+GROQ_API_KEY=
+OPENAI_API_KEY=
+OPENAI_EMBEDDING_MODEL=text-embedding-3-small
 ```
 
-3. No SQL Editor do Supabase, execute o migration:
+3. No SQL Editor do Supabase, execute os migrations na ordem:
    - `supabase/migrations/202602281450_initial_schema.sql`
+   - `supabase/migrations/202602281610_notice_ranges.sql`
+   - `supabase/migrations/202602281700_rag_documents.sql`
+   - `supabase/migrations/202602281730_notice_files_display_name.sql`
+   - `supabase/migrations/202602281900_rag_fts_search.sql`
+   - `supabase/migrations/202602281930_rag_pgvector_hybrid.sql`
+   - `supabase/migrations/202602282000_rag_settings.sql`
 4. Crie o primeiro usuario admin:
    - Cadastre um usuario pelo Auth do Supabase
    - No SQL Editor, rode:

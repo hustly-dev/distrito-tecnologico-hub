@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { ensureAdmin } from "@/lib/auth/adminGuard";
 import { extractTextFromFile } from "@/lib/rag/extractText";
 import { chunkText } from "@/lib/rag/chunkText";
+import { generateEmbeddingsBatch, toPgVectorLiteral } from "@/lib/rag/embeddings";
 
 const STORAGE_BUCKET = "notice-files";
 
@@ -170,14 +171,38 @@ export async function POST(
         continue;
       }
 
-      const { error: chunksError } = await auth.supabase.from("document_chunks").insert(
-        chunks.map((chunk) => ({
-          document_id: documentRow.id,
-          chunk_index: chunk.chunkIndex,
-          content: chunk.content,
-          token_count: chunk.tokenCount
-        }))
-      );
+      let chunkEmbeddings: number[][] = [];
+      if (process.env.OPENAI_API_KEY) {
+        try {
+          chunkEmbeddings = await generateEmbeddingsBatch(chunks.map((chunk) => chunk.content));
+        } catch {
+          ragWarnings.push(`Embeddings indisponiveis para ${upload.file_name}. Seguindo com FTS.`);
+        }
+      }
+
+      const chunksWithEmbedding = chunks.map((chunk, index) => ({
+        document_id: documentRow.id,
+        chunk_index: chunk.chunkIndex,
+        content: chunk.content,
+        token_count: chunk.tokenCount,
+        embedding: chunkEmbeddings[index] ? toPgVectorLiteral(chunkEmbeddings[index]) : null
+      }));
+      const chunksWithoutEmbedding = chunksWithEmbedding.map((chunk) => ({
+        document_id: chunk.document_id,
+        chunk_index: chunk.chunk_index,
+        content: chunk.content,
+        token_count: chunk.token_count
+      }));
+
+      const firstChunkInsert = await auth.supabase.from("document_chunks").insert(chunksWithEmbedding);
+      const fallbackChunkInsert =
+        firstChunkInsert.error &&
+        (firstChunkInsert.error.message.includes("embedding") ||
+          firstChunkInsert.error.message.includes("vector"))
+          ? await auth.supabase.from("document_chunks").insert(chunksWithoutEmbedding)
+          : null;
+      const chunksError =
+        firstChunkInsert.error && !fallbackChunkInsert ? firstChunkInsert.error : fallbackChunkInsert?.error ?? null;
 
       if (chunksError) {
         ragWarnings.push(`Falha ao salvar chunks para ${upload.file_name}.`);

@@ -40,11 +40,22 @@ interface UploadFileInput {
   displayName: string;
 }
 
+export type RagSearchLevel = "baixo" | "medio" | "alto";
+
+interface RagSettings {
+  searchLevel: RagSearchLevel;
+  useLegacyFallback: boolean;
+}
+
 export function useAdminPanel() {
   const [agencias, setAgencias] = useState<Agencia[]>([]);
   const [editais, setEditais] = useState<Edital[]>([]);
   const [topicos, setTopicos] = useState<Topico[]>([]);
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFilePreview[]>([]);
+  const [ragSettings, setRagSettings] = useState<RagSettings>({
+    searchLevel: "medio",
+    useLegacyFallback: true
+  });
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -66,6 +77,12 @@ export function useAdminPanel() {
       setEditais(data.editais);
       setTopicos(data.topicos);
       setUploadedFiles(data.uploadedFiles);
+
+      const ragResponse = await fetch("/api/admin/rag-settings");
+      if (ragResponse.ok) {
+        const ragData = (await ragResponse.json()) as RagSettings;
+        setRagSettings(ragData);
+      }
     } catch {
       setError("Nao foi possivel carregar os dados do admin.");
     } finally {
@@ -170,10 +187,23 @@ export function useAdminPanel() {
     await reload();
   };
 
+  const updateRagSettings = async (payload: RagSettings) => {
+    const response = await fetch("/api/admin/rag-settings", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+    if (!response.ok) {
+      throw new Error("Falha ao atualizar configuracoes do RAG.");
+    }
+    setRagSettings(payload);
+  };
+
   return {
     agencias,
     editais,
     uploadedFiles,
+    ragSettings,
     topicos,
     isLoading,
     error,
@@ -185,6 +215,7 @@ export function useAdminPanel() {
     uploadFilesToEdital,
     renameNoticeFile,
     deleteNoticeFile,
+    updateRagSettings,
     reload
   };
 }
