@@ -8,6 +8,7 @@ interface FloatingChatProps {
   title: string;
   initialMessages?: MensagemChat[];
   botName?: string;
+  noticeId?: string;
   triggerLabel?: string;
   emptyStateMessage?: string;
 }
@@ -16,13 +17,14 @@ export function FloatingChat({
   title,
   initialMessages,
   botName,
+  noticeId,
   triggerLabel = "Chat",
   emptyStateMessage = "Comece a conversa enviando sua duvida."
 }: FloatingChatProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [text, setText] = useState("");
   const [uploadFeedback, setUploadFeedback] = useState("");
-  const { messages, isReplying, sendMessage, containerRef } = useChat({ initialMessages, botName });
+  const { messages, isReplying, sendMessage, containerRef } = useChat({ initialMessages, botName, noticeId });
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();

@@ -1,4 +1,5 @@
 import { AgencyPage } from "@/features/agencia/AgencyPage";
+import { getHubData } from "@/lib/data/hubRepository";
 
 interface AgencyRouteProps {
   params: Promise<{
@@ -8,5 +9,13 @@ interface AgencyRouteProps {
 
 export default async function Page({ params }: AgencyRouteProps) {
   const resolvedParams = await params;
-  return <AgencyPage agencyId={resolvedParams.agencyId} />;
+  const hubData = await getHubData();
+  return (
+    <AgencyPage
+      agencyId={resolvedParams.agencyId}
+      agencias={hubData.agencias}
+      editais={hubData.editais}
+      topicos={hubData.topicos}
+    />
+  );
 }

@@ -3,13 +3,16 @@ import { BadgeStatus } from "@/components/BadgeStatus";
 import { FloatingChat } from "@/components/FloatingChat";
 import { Tag } from "@/components/Tag";
 import { MainLayout } from "@/layouts/MainLayout";
-import { agencias, editais, topicos } from "@/mocks/editais";
+import { Agencia, Edital, Topico } from "@/types";
 
 interface EditalPageProps {
   editalId: string;
+  agencias: Agencia[];
+  editais: Edital[];
+  topicos: Topico[];
 }
 
-export function EditalPage({ editalId }: EditalPageProps) {
+export function EditalPage({ editalId, agencias, editais, topicos }: EditalPageProps) {
   const edital = editais.find((item) => item.id === editalId);
 
   if (!edital) {
@@ -51,14 +54,37 @@ export function EditalPage({ editalId }: EditalPageProps) {
             <p>
               <span className="font-medium">Prazo final:</span> {edital.dataLimite}
             </p>
+            {(edital.valorMinimo !== undefined || edital.valorMaximo !== undefined) && (
+              <p>
+                <span className="font-medium">Faixa de valor:</span>{" "}
+                {edital.valorMinimo !== undefined ? `R$ ${edital.valorMinimo.toLocaleString("pt-BR")}` : "N/D"} -{" "}
+                {edital.valorMaximo !== undefined ? `R$ ${edital.valorMaximo.toLocaleString("pt-BR")}` : "N/D"}
+              </p>
+            )}
+            {(edital.trlMinimo !== undefined || edital.trlMaximo !== undefined) && (
+              <p>
+                <span className="font-medium">Faixa de TRL:</span> {edital.trlMinimo ?? "N/D"} -{" "}
+                {edital.trlMaximo ?? "N/D"}
+              </p>
+            )}
           </div>
 
           <button
             type="button"
             className="mt-4 h-10 rounded-md bg-district-red px-4 text-sm font-semibold text-white transition hover:bg-red-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300"
           >
-            Download do edital (mock)
+            Download do edital
           </button>
+          {edital.linkAcesso && (
+            <a
+              href={edital.linkAcesso}
+              target="_blank"
+              rel="noreferrer"
+              className="ml-2 inline-flex h-10 items-center rounded-md border border-district-border px-4 text-sm font-semibold text-gray-700 transition hover:bg-gray-100 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-800"
+            >
+              Link de acesso
+            </a>
+          )}
         </header>
 
         <section className="rounded-mdx border border-district-border bg-white p-5 dark:border-gray-700 dark:bg-gray-900">
@@ -89,6 +115,7 @@ export function EditalPage({ editalId }: EditalPageProps) {
       <FloatingChat
         title="Chat do edital"
         botName="Especialista do Edital"
+        noticeId={edital.id}
         triggerLabel="Chat do edital"
         emptyStateMessage="Ainda nao ha mensagens neste chat."
         initialMessages={[

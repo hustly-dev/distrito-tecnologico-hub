@@ -6,6 +6,7 @@ import { MensagemChat } from "@/types";
 interface UseChatOptions {
   initialMessages?: MensagemChat[];
   botName?: string;
+  noticeId?: string;
 }
 
 export function useChat(options?: UseChatOptions) {
@@ -52,6 +53,7 @@ export function useChat(options?: UseChatOptions) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           botName: options?.botName,
+          noticeId: options?.noticeId,
           messages: conversationSnapshot.map((message) => ({
             role: toRole(message.usuario),
             content: message.conteudo
@@ -69,12 +71,19 @@ export function useChat(options?: UseChatOptions) {
         throw new Error("Resposta vazia.");
       }
 
+      const responseData = data as { content?: string; sources?: string[] };
+      const sources = responseData.sources ?? [];
+      const sourcesLabel =
+        sources.length > 0
+          ? `\n\nFontes consultadas: ${sources.join(", ")}`
+          : "";
+
       const botNow = new Date();
       const botHorario = botNow.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
       const botMessage: MensagemChat = {
         id: crypto.randomUUID(),
         usuario: options?.botName ?? "Assistente",
-        conteudo: botText,
+        conteudo: `${botText}${sourcesLabel}`,
         horario: botHorario
       };
 

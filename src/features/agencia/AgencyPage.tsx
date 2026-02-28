@@ -3,20 +3,22 @@
 import { useMemo, useState } from "react";
 import { CardEdital } from "@/components/CardEdital";
 import { MainLayout } from "@/layouts/MainLayout";
-import { agencias, editais, topicos } from "@/mocks/editais";
-import { EditalStatus } from "@/types";
+import { Agencia, Edital, EditalStatus, Topico } from "@/types";
 
 interface AgencyPageProps {
   agencyId: string;
+  agencias: Agencia[];
+  editais: Edital[];
+  topicos: Topico[];
 }
 
-export function AgencyPage({ agencyId }: AgencyPageProps) {
+export function AgencyPage({ agencyId, agencias, editais, topicos }: AgencyPageProps) {
   const [status, setStatus] = useState<EditalStatus | "">("");
   const agencia = agencias.find((item) => item.id === agencyId);
 
   const editaisAgencia = useMemo(() => {
     return editais.filter((item) => item.agenciaId === agencyId && (status ? item.status === status : true));
-  }, [agencyId, status]);
+  }, [agencyId, editais, status]);
 
   if (!agencia) {
     return (

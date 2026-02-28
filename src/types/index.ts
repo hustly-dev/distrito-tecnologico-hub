@@ -29,6 +29,11 @@ export interface Edital {
   id: string;
   nome: string;
   agenciaId: string;
+  linkAcesso?: string;
+  valorMinimo?: number;
+  valorMaximo?: number;
+  trlMinimo?: number;
+  trlMaximo?: number;
   status: EditalStatus;
   dataPublicacao: string;
   dataLimite: string;

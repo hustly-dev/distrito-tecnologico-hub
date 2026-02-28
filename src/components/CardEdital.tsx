@@ -29,6 +29,9 @@ export function CardEdital({ edital, agencia, topicos }: CardEditalProps) {
           <p>
             <span className="font-medium text-gray-700 dark:text-gray-200">Publicacao:</span> {edital.dataPublicacao}
           </p>
+          <p>
+            <span className="font-medium text-gray-700 dark:text-gray-200">Prazo:</span> {edital.dataLimite}
+          </p>
         </div>
 
         <p className="text-sm leading-relaxed text-gray-600 dark:text-gray-300">{edital.resumo}</p>
@@ -39,7 +42,9 @@ export function CardEdital({ edital, agencia, topicos }: CardEditalProps) {
           ))}
         </div>
 
-        <p className="mt-auto pt-1 text-xs font-medium text-district-red">Toque para ver detalhes</p>
+        <p className="mt-auto rounded-md bg-red-50 px-2 py-1 text-xs font-medium text-district-red dark:bg-red-950/30">
+          Toque para ver detalhes
+        </p>
       </article>
     </Link>
   );

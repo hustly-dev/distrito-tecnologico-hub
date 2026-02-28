@@ -1,4 +1,5 @@
 import { EditalPage } from "@/features/edital/EditalPage";
+import { getHubData } from "@/lib/data/hubRepository";
 
 interface EditalRouteProps {
   params: Promise<{
@@ -8,5 +9,13 @@ interface EditalRouteProps {
 
 export default async function Page({ params }: EditalRouteProps) {
   const resolvedParams = await params;
-  return <EditalPage editalId={resolvedParams.id} />;
+  const hubData = await getHubData();
+  return (
+    <EditalPage
+      editalId={resolvedParams.id}
+      agencias={hubData.agencias}
+      editais={hubData.editais}
+      topicos={hubData.topicos}
+    />
+  );
 }

@@ -1,6 +1,6 @@
 # Distrito Tecnologico - Hub Inteligente de Editais
 
-Frontend em `Next.js + React + TypeScript + TailwindCSS`, sem backend e sem integracoes externas.
+Frontend em `Next.js + React + TypeScript + TailwindCSS` com backend no App Router e persistencia no Supabase.
 
 ## Como executar
 
@@ -20,6 +20,37 @@ GROQ_API_KEY=sua_chave_groq
 
 3. Reinicie o servidor `npm run dev`.
 4. Abra o chat geral ou de edital e envie uma mensagem.
+
+## Supabase (auth + banco + storage)
+
+1. Copie `.env.example` para `.env.local`.
+2. Preencha:
+
+```bash
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
+```
+
+3. No SQL Editor do Supabase, execute o migration:
+   - `supabase/migrations/202602281450_initial_schema.sql`
+4. Crie o primeiro usuario admin:
+   - Cadastre um usuario pelo Auth do Supabase
+   - No SQL Editor, rode:
+
+```sql
+update public.profiles
+set role = 'admin'
+where id = 'UUID_DO_USUARIO';
+```
+
+5. Reinicie o projeto (`npm run dev`).
+
+### Fluxo de login
+
+- `user`: acesso ao hub e detalhes de editais/agencias.
+- `admin`: acesso ao painel `/admin` para CRUD de agencias/editais/tags e upload de arquivos.
+- Rotas protegidas por middleware com verificacao de sessao e role.
 
 ## Estrutura
 

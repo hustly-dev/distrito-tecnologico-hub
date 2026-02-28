@@ -9,7 +9,7 @@ export function DistrictLogo({ href = "/hub" }: DistrictLogoProps) {
   return (
     <Link
       href={href}
-      className="inline-flex items-center"
+      className="inline-flex items-center overflow-hidden"
       aria-label="Ir para o hub do Distrito Tecnologico"
     >
       <Image
@@ -18,7 +18,7 @@ export function DistrictLogo({ href = "/hub" }: DistrictLogoProps) {
         width={178}
         height={52}
         priority
-        className="h-auto w-[118px] object-contain sm:w-[168px]"
+        className="h-8 w-auto max-w-[120px] object-contain sm:h-9 sm:max-w-[150px] lg:h-10 lg:max-w-[170px]"
       />
     </Link>
   );

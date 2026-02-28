@@ -29,7 +29,7 @@ export function FilterBar({
   onTopicoChange
 }: FilterBarProps) {
   return (
-    <section className="grid gap-3 rounded-mdx border border-district-border bg-white p-4 dark:border-gray-700 dark:bg-gray-900 md:grid-cols-3">
+    <section className="grid gap-3 rounded-mdx border border-district-border bg-white p-4 shadow-card dark:border-gray-700 dark:bg-gray-900 md:grid-cols-3">
       <label className="flex flex-col gap-1">
         <span className="text-sm font-medium text-gray-700 dark:text-gray-200">Agencia</span>
         <select
