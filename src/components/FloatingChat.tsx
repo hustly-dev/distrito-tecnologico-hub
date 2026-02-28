@@ -11,6 +11,7 @@ interface FloatingChatProps {
   noticeId?: string;
   triggerLabel?: string;
   emptyStateMessage?: string;
+  quickActions?: string[];
 }
 
 export function FloatingChat({
@@ -19,7 +20,8 @@ export function FloatingChat({
   botName,
   noticeId,
   triggerLabel = "Chat",
-  emptyStateMessage = "Comece a conversa enviando sua duvida."
+  emptyStateMessage = "Comece a conversa enviando sua duvida.",
+  quickActions
 }: FloatingChatProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [text, setText] = useState("");
@@ -39,6 +41,21 @@ export function FloatingChat({
     setUploadFeedback(`Arquivo anexado: ${file.name}`);
     event.target.value = "";
   };
+
+  const contextualQuickActions = (quickActions && quickActions.length > 0
+    ? quickActions
+    : noticeId
+      ? [
+          "Quais requisitos obrigatorios deste edital?",
+          "Qual o prazo final e documentos principais?",
+          "Este edital combina com projeto de R$ 2 milhoes?"
+        ]
+      : [
+          "Tenho projeto de IA com R$ 3 milhoes. Quais editais posso tentar?",
+          "Quais editais abertos para bioeconomia hoje?",
+          "Compare os 3 editais mais aderentes para ESG."
+        ]
+  ).slice(0, 3);
 
   return (
     <>
@@ -89,6 +106,21 @@ export function FloatingChat({
           </div>
 
           <form onSubmit={handleSubmit} className="border-t border-district-border p-3 dark:border-gray-700">
+            {contextualQuickActions.length > 0 && (
+              <div className="mb-2 flex flex-wrap gap-2">
+                {contextualQuickActions.map((action) => (
+                  <button
+                    key={action}
+                    type="button"
+                    onClick={() => sendMessage(action)}
+                    disabled={isReplying}
+                    className="rounded-full border border-district-border px-3 py-1.5 text-xs font-medium text-gray-700 transition hover:bg-gray-50 disabled:opacity-60 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-800"
+                  >
+                    {action}
+                  </button>
+                ))}
+              </div>
+            )}
             <div className="mb-2 grid grid-cols-[auto_1fr_auto] gap-2">
               <label className="inline-flex h-10 cursor-pointer items-center justify-center rounded-md border border-district-border px-3 text-sm font-medium text-gray-700 dark:border-gray-700 dark:text-gray-100">
                 Anexar
