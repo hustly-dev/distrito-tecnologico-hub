@@ -1,11 +1,12 @@
 import { EditalPage } from "@/features/edital/EditalPage";
 
 interface EditalRouteProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
-export default function Page({ params }: EditalRouteProps) {
-  return <EditalPage editalId={params.id} />;
+export default async function Page({ params }: EditalRouteProps) {
+  const resolvedParams = await params;
+  return <EditalPage editalId={resolvedParams.id} />;
 }

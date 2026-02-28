@@ -60,14 +60,14 @@ export function HomePage() {
             {Array.from({ length: 6 }).map((_, index) => (
               <div
                 key={index}
-                className="h-52 animate-pulse rounded-mdx border border-district-border bg-white/70"
+                className="h-52 animate-pulse rounded-mdx border border-district-border bg-white/70 dark:border-gray-700 dark:bg-gray-900/80"
               />
             ))}
           </section>
         ) : filtrados.length === 0 ? (
-          <section className="rounded-mdx border border-dashed border-district-border bg-white p-6 text-center">
-            <h2 className="text-base font-semibold text-gray-900">Nenhum edital encontrado</h2>
-            <p className="mt-2 text-sm text-gray-600">
+          <section className="rounded-mdx border border-dashed border-district-border bg-white p-6 text-center dark:border-gray-700 dark:bg-gray-900">
+            <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100">Nenhum edital encontrado</h2>
+            <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
               Ajuste os filtros para visualizar editais disponiveis no hub.
             </p>
           </section>

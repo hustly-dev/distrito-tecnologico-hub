@@ -1,11 +1,12 @@
 import { AgencyPage } from "@/features/agencia/AgencyPage";
 
 interface AgencyRouteProps {
-  params: {
+  params: Promise<{
     agencyId: string;
-  };
+  }>;
 }
 
-export default function Page({ params }: AgencyRouteProps) {
-  return <AgencyPage agencyId={params.agencyId} />;
+export default async function Page({ params }: AgencyRouteProps) {
+  const resolvedParams = await params;
+  return <AgencyPage agencyId={resolvedParams.agencyId} />;
 }

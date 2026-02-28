@@ -11,37 +11,36 @@ interface CardEditalProps {
 
 export function CardEdital({ edital, agencia, topicos }: CardEditalProps) {
   return (
-    <article className="flex h-full flex-col gap-4 rounded-mdx border border-district-border bg-white p-4 shadow-card transition hover:-translate-y-1 hover:shadow-lg">
-      <div className="flex items-start justify-between gap-3">
-        <h3 className="text-base font-semibold text-gray-900">{edital.nome}</h3>
-        <BadgeStatus status={edital.status} />
-      </div>
+    <Link
+      href={`/edital/${edital.id}`}
+      aria-label={`Abrir detalhes do edital ${edital.nome}`}
+      className="group block h-full min-w-0 rounded-mdx focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300"
+    >
+      <article className="flex h-full flex-col gap-4 rounded-mdx border border-district-border bg-white p-4 shadow-card transition group-hover:-translate-y-1 group-hover:shadow-lg dark:border-gray-700 dark:bg-gray-900">
+        <div className="flex items-start justify-between gap-3">
+          <h3 className="break-words text-base font-semibold text-gray-900 dark:text-gray-100">{edital.nome}</h3>
+          <BadgeStatus status={edital.status} />
+        </div>
 
-      <div className="space-y-1 text-sm text-gray-600">
-        <p>
-          <span className="font-medium text-gray-700">Agencia:</span> {agencia?.sigla ?? "N/D"}
-        </p>
-        <p>
-          <span className="font-medium text-gray-700">Publicacao:</span> {edital.dataPublicacao}
-        </p>
-      </div>
+        <div className="space-y-1 text-sm text-gray-600 dark:text-gray-300">
+          <p>
+            <span className="font-medium text-gray-700 dark:text-gray-200">Agencia:</span> {agencia?.sigla ?? "N/D"}
+          </p>
+          <p>
+            <span className="font-medium text-gray-700 dark:text-gray-200">Publicacao:</span> {edital.dataPublicacao}
+          </p>
+        </div>
 
-      <p className="text-sm leading-relaxed text-gray-600">{edital.resumo}</p>
+        <p className="text-sm leading-relaxed text-gray-600 dark:text-gray-300">{edital.resumo}</p>
 
-      <div className="flex flex-wrap gap-2">
-        {topicos.map((topico) => (
-          <Tag label={topico.nome} key={topico.id} />
-        ))}
-      </div>
+        <div className="flex flex-wrap gap-2">
+          {topicos.map((topico) => (
+            <Tag label={topico.nome} key={topico.id} />
+          ))}
+        </div>
 
-      <div className="mt-auto pt-2">
-        <Link
-          href={`/edital/${edital.id}`}
-          className="inline-flex h-10 items-center rounded-md bg-district-red px-4 text-sm font-semibold text-white transition hover:bg-red-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300"
-        >
-          Ver detalhes
-        </Link>
-      </div>
-    </article>
+        <p className="mt-auto pt-1 text-xs font-medium text-district-red">Toque para ver detalhes</p>
+      </article>
+    </Link>
   );
 }
