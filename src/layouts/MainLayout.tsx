@@ -59,14 +59,12 @@ export function MainLayout({
       >
         <div className="flex h-full flex-col rounded-mdx border border-district-border bg-white p-2 shadow-card dark:border-gray-700 dark:bg-gray-900">
           <div className="mb-2 flex items-center justify-between">
-            {!isDesktopNavCollapsed && (
-              <p className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
-                <svg aria-hidden="true" viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M4 7h16M4 12h16M4 17h16" strokeLinecap="round" />
-                </svg>
-                Menu
-              </p>
-            )}
+            <p className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+              <svg aria-hidden="true" viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M4 7h16M4 12h16M4 17h16" strokeLinecap="round" />
+              </svg>
+              {!isDesktopNavCollapsed && "Menu"}
+            </p>
             <button
               type="button"
               onClick={() => setIsDesktopNavCollapsed((value) => !value)}

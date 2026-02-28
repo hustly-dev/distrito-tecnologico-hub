@@ -74,15 +74,13 @@ export function FloatingChat({
         >
           <section className="flex w-full flex-col rounded-mdx border border-district-border bg-white shadow-xl dark:border-gray-700 dark:bg-gray-900">
             <header className="flex items-center justify-between border-b border-district-border px-3 py-2 dark:border-gray-700">
-              {!isDesktopCollapsed && (
-                <h3 className="inline-flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-gray-100">
-                  <svg aria-hidden="true" viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M8 10h8M8 14h5" strokeLinecap="round" />
-                    <path d="M5 19V7a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H9l-4 2z" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                  {title}
-                </h3>
-              )}
+              <h3 className="inline-flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-gray-100">
+                <svg aria-hidden="true" viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M8 10h8M8 14h5" strokeLinecap="round" />
+                  <path d="M5 19V7a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H9l-4 2z" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+                {!isDesktopCollapsed && title}
+              </h3>
               <button
                 type="button"
                 onClick={() => setIsDesktopCollapsed((value) => !value)}
@@ -299,7 +297,8 @@ export function FloatingChat({
           </svg>
         ) : (
           <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M4 12h16M12 4v16" strokeLinecap="round" />
+            <path d="M8 10h8M8 14h5" strokeLinecap="round" />
+            <path d="M5 19V7a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H9l-4 2z" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         )}
       </button>
