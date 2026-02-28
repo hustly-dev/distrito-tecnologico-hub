@@ -1,6 +1,8 @@
 "use client";
 
 import { ChangeEvent, FormEvent, useState } from "react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { MensagemChat } from "@/types";
 import { useChat } from "@/hooks/useChat";
 
@@ -88,7 +90,23 @@ export function FloatingChat({
                     <strong className="text-xs text-gray-800 dark:text-gray-100">{message.usuario}</strong>
                     <span className="text-[11px] text-gray-500 dark:text-gray-400">{message.horario}</span>
                   </div>
-                  <p className="text-sm text-gray-700 dark:text-gray-300">{message.conteudo}</p>
+                  <div className="text-sm text-gray-700 dark:text-gray-300">
+                    <ReactMarkdown
+                      remarkPlugins={[remarkGfm]}
+                      components={{
+                        h1: ({ children }) => <h4 className="mb-1 mt-2 text-sm font-bold">{children}</h4>,
+                        h2: ({ children }) => <h4 className="mb-1 mt-2 text-sm font-semibold">{children}</h4>,
+                        h3: ({ children }) => <h5 className="mb-1 mt-2 text-sm font-semibold">{children}</h5>,
+                        p: ({ children }) => <p className="mb-2 last:mb-0 leading-relaxed">{children}</p>,
+                        ul: ({ children }) => <ul className="mb-2 list-disc space-y-1 pl-5">{children}</ul>,
+                        ol: ({ children }) => <ol className="mb-2 list-decimal space-y-1 pl-5">{children}</ol>,
+                        li: ({ children }) => <li>{children}</li>,
+                        strong: ({ children }) => <strong className="font-semibold text-gray-800 dark:text-gray-100">{children}</strong>
+                      }}
+                    >
+                      {message.conteudo}
+                    </ReactMarkdown>
+                  </div>
                 </article>
               ))
             )}

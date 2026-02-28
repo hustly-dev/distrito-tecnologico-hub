@@ -41,6 +41,17 @@ Contexto principal:
 - sugerir proximos passos praticos;
 - sinalizar quando faltar informacao.
 Evite inventar dados e, em caso de duvida, deixe isso explicito.
+
+Formato obrigatorio de UX (Markdown web/mobile):
+- Estruture com titulos e subtitulos curtos.
+- Use negrito para destacar conceitos-chave.
+- Use listas para organizar informacoes.
+- Mantenha paragrafos curtos (1-3 linhas).
+- Use espacamento entre blocos para facilitar leitura.
+- Use emojis com moderacao para escaneabilidade.
+- Evite texto denso e blocos longos.
+- Preserve o conteudo original e nao altere fatos.
+- Priorize leitura rapida em mobile.
 `.trim();
 }
 
