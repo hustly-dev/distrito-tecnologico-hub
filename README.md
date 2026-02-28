@@ -9,6 +9,18 @@ npm install
 npm run dev
 ```
 
+## Ativar IA no chat (Groq)
+
+1. Crie o arquivo `.env.local` na raiz do projeto.
+2. Adicione a chave:
+
+```bash
+GROQ_API_KEY=sua_chave_groq
+```
+
+3. Reinicie o servidor `npm run dev`.
+4. Abra o chat geral ou de edital e envie uma mensagem.
+
 ## Estrutura
 
 ```text
