@@ -30,14 +30,17 @@ export function EditalPage({ editalId, agencias, editais, topicos }: EditalPageP
   const editalTopicos = topicos.filter((item) => edital.topicos.includes(item.id));
 
   return (
-    <MainLayout agencias={agencias} activeAgencyId={edital.agenciaId}>
+    <MainLayout agencias={agencias} activeAgencyId={edital.agenciaId} hasLeftChatRail>
       <article className="space-y-4">
         <header className="rounded-mdx border border-district-border bg-white p-5 dark:border-gray-700 dark:bg-gray-900">
           <Link
             href="/hub"
-            className="mb-4 inline-flex h-9 items-center rounded-md border border-district-border px-3 text-sm font-medium text-gray-700 transition hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300 dark:border-gray-700 dark:text-gray-100 dark:hover:bg-gray-800"
+            className="mb-4 inline-flex h-9 w-9 items-center justify-center rounded-md border border-district-border text-gray-700 transition hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300 dark:border-gray-700 dark:text-gray-100 dark:hover:bg-gray-800"
+            aria-label="Voltar para home"
           >
-            Voltar para Home
+            <svg aria-hidden="true" viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M15 18l-6-6 6-6" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
           </Link>
           <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
             <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">{edital.nome}</h1>
@@ -117,6 +120,8 @@ export function EditalPage({ editalId, agencias, editais, topicos }: EditalPageP
         botName="Especialista do Edital"
         noticeId={edital.id}
         triggerLabel="Chat do edital"
+        desktopDocked
+        desktopDockedSide="right"
         emptyStateMessage="Ainda nao ha mensagens neste chat."
         initialMessages={[
           {

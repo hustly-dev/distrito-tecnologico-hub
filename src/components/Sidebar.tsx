@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Agencia } from "@/types";
 
 interface SidebarProps {
@@ -16,8 +19,11 @@ export function Sidebar({
   canViewAdmin = false,
   onNavigate
 }: SidebarProps) {
+  const pathname = usePathname();
+  const isProfileRoute = pathname?.startsWith("/perfil");
+
   return (
-    <aside className="rounded-mdx border border-district-border bg-white p-4 shadow-card dark:border-gray-700 dark:bg-gray-900">
+    <aside className="h-full overflow-y-auto rounded-mdx border border-district-border bg-white p-4 shadow-card dark:border-gray-700 dark:bg-gray-900">
       <h2 className="mb-3 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Navegacao</h2>
       <nav aria-label="Menu lateral de agencias" className="space-y-2">
         <Link
@@ -44,6 +50,17 @@ export function Sidebar({
             Painel Admin
           </Link>
         )}
+        <Link
+          href="/perfil"
+          onClick={onNavigate}
+          className={`block rounded-md px-3 py-2 text-sm font-medium transition ${
+            isProfileRoute
+              ? "bg-red-50 text-district-red dark:bg-red-950/40"
+              : "text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800"
+          }`}
+        >
+          Meu perfil
+        </Link>
       </nav>
 
       <h2 className="mb-3 mt-5 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Agencias</h2>

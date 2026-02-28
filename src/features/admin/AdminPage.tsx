@@ -67,6 +67,7 @@ export function AdminPage() {
   const [activeTab, setActiveTab] = useState<"editais" | "agencias">("editais");
   const [noticeSearch, setNoticeSearch] = useState("");
   const [selectedNoticeId, setSelectedNoticeId] = useState<string | null>(null);
+  const [isCreatingNewNotice, setIsCreatingNewNotice] = useState(false);
   const [agencyForm, setAgencyForm] = useState({ nome: "", sigla: "", descricao: "" });
   const [editalForm, setEditalForm] = useState(getEmptyNoticeForm());
   const [tagInput, setTagInput] = useState("");
@@ -130,8 +131,8 @@ export function AdminPage() {
   }, [ragSettings]);
 
   useEffect(() => {
-    if (!selectedNoticeId && editais.length > 0) setSelectedNoticeId(editais[0].id);
-  }, [editais, selectedNoticeId]);
+    if (!selectedNoticeId && !isCreatingNewNotice && editais.length > 0) setSelectedNoticeId(editais[0].id);
+  }, [editais, selectedNoticeId, isCreatingNewNotice]);
 
   useEffect(() => {
     if (!selectedNotice) return;
@@ -169,6 +170,12 @@ export function AdminPage() {
     void loadFiles();
   }, [selectedNoticeId, listNoticeFiles]);
 
+  useEffect(() => {
+    if (selectedNoticeId) return;
+    setNoticeFiles([]);
+    setPendingFiles([]);
+  }, [selectedNoticeId]);
+
   const handleAgencySubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!agencyForm.nome.trim() || !agencyForm.sigla.trim() || !agencyForm.descricao.trim()) return;
@@ -200,6 +207,7 @@ export function AdminPage() {
         setFeedback("Edital atualizado com sucesso.");
       } else {
         await createEdital(payload);
+        setIsCreatingNewNotice(false);
         setFeedback("Edital cadastrado com sucesso.");
       }
     } catch {
@@ -350,11 +358,11 @@ export function AdminPage() {
             <aside className="rounded-mdx border border-district-border bg-white p-4 shadow-card dark:border-gray-700 dark:bg-gray-900">
               <div className="mb-3 flex gap-2">
                 <input value={noticeSearch} onChange={(event) => setNoticeSearch(event.target.value)} placeholder="Buscar edital..." className="h-10 w-full rounded-md border border-district-border bg-white px-3 text-sm text-gray-900 outline-none focus:border-district-red focus:ring-2 focus:ring-red-200 dark:border-gray-700 dark:bg-gray-950 dark:text-gray-100" />
-                <button type="button" onClick={() => { setSelectedNoticeId(null); setEditalForm(getEmptyNoticeForm()); }} className="h-10 rounded-md border border-district-border px-3 text-sm font-semibold">Novo</button>
+                <button type="button" onClick={() => { setIsCreatingNewNotice(true); setSelectedNoticeId(null); setEditalForm(getEmptyNoticeForm()); setTagInput(""); setNoticeFileSearch(""); }} className="h-10 rounded-md border border-district-border px-3 text-sm font-semibold">Novo</button>
               </div>
               <div className="max-h-[560px] space-y-2 overflow-y-auto pr-1">
                 {filteredNotices.map((edital) => (
-                  <button key={edital.id} type="button" onClick={() => setSelectedNoticeId(edital.id)} className={`w-full rounded-md border px-3 py-2 text-left ${selectedNoticeId === edital.id ? "border-district-red bg-red-50 dark:bg-red-950/20" : "border-district-border hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800"}`}>
+                  <button key={edital.id} type="button" onClick={() => { setIsCreatingNewNotice(false); setSelectedNoticeId(edital.id); }} className={`w-full rounded-md border px-3 py-2 text-left ${selectedNoticeId === edital.id ? "border-district-red bg-red-50 dark:bg-red-950/20" : "border-district-border hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800"}`}>
                     <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">{edital.nome}</p>
                     <p className="text-xs text-gray-500 dark:text-gray-400">{edital.status}</p>
                   </button>
@@ -367,7 +375,7 @@ export function AdminPage() {
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100">{selectedNoticeId ? "Editar edital" : "Novo edital"}</h2>
                   <div className="flex gap-2">
-                    {selectedNoticeId && <button type="button" onClick={async () => { if (window.confirm("Excluir este edital?")) { await deleteEdital(selectedNoticeId); setSelectedNoticeId(null); setEditalForm(getEmptyNoticeForm()); setFeedback("Edital excluido com sucesso."); } }} className="h-9 rounded-md border border-red-300 px-3 text-sm font-semibold text-red-700 dark:border-red-800 dark:text-red-300">Excluir</button>}
+                    {selectedNoticeId && <button type="button" onClick={async () => { if (window.confirm("Excluir este edital?")) { await deleteEdital(selectedNoticeId); setIsCreatingNewNotice(true); setSelectedNoticeId(null); setEditalForm(getEmptyNoticeForm()); setFeedback("Edital excluido com sucesso."); } }} className="h-9 rounded-md border border-red-300 px-3 text-sm font-semibold text-red-700 dark:border-red-800 dark:text-red-300">Excluir</button>}
                     <button type="submit" disabled={isSavingNotice} className="h-9 rounded-md bg-district-red px-4 text-sm font-semibold text-white disabled:opacity-60">{isSavingNotice ? "Salvando..." : "Salvar"}</button>
                   </div>
                 </div>

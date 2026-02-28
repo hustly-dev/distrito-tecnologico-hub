@@ -20,6 +20,7 @@ export function HomePage({ agencias, editais, topicos }: HomePageProps) {
   const [agenciaId, setAgenciaId] = useState("");
   const [status, setStatus] = useState<EditalStatus | "">("");
   const [topicoId, setTopicoId] = useState("");
+  const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
 
   useEffect(() => {
     // Simula consumo de API para preparar o front para futura integracao.
@@ -50,28 +51,40 @@ export function HomePage({ agencias, editais, topicos }: HomePageProps) {
     setAgenciaId("");
     setStatus("");
     setTopicoId("");
+    setIsMobileFiltersOpen(false);
   };
 
   return (
-    <MainLayout agencias={agencias} showGeneralChat>
+    <MainLayout agencias={agencias} showGeneralChat hasLeftChatRail>
       <div className="space-y-5">
-        <section className="rounded-mdx border border-district-border bg-white p-4 shadow-card dark:border-gray-700 dark:bg-gray-900">
-          <div className="flex flex-wrap items-end justify-between gap-3">
+        <section className="rounded-mdx border border-district-border bg-white p-3 shadow-card dark:border-gray-700 dark:bg-gray-900 sm:p-4">
+          <div className="flex flex-wrap items-center justify-between gap-2">
             <div>
-              <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">Central de editais</h1>
-              <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">
+              <h1 className="text-base font-bold text-gray-900 dark:text-gray-100 sm:text-lg">Central de editais</h1>
+              <p className="mt-1 hidden text-sm text-gray-600 dark:text-gray-300 sm:block">
                 Explore oportunidades por agencia, status e topicos de interesse.
               </p>
             </div>
             <button
               type="button"
               onClick={resetFiltros}
-              className="h-10 rounded-md border border-district-border px-4 text-sm font-medium text-gray-700 transition hover:bg-gray-100 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-800"
+              className="h-9 rounded-md border border-district-border px-3 text-xs font-medium text-gray-700 transition hover:bg-gray-100 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-800 sm:h-10 sm:px-4 sm:text-sm"
             >
               Limpar filtros
             </button>
           </div>
-          <div className="mt-4 grid gap-3 sm:grid-cols-3">
+          <div className="mt-3 flex flex-wrap gap-2 sm:hidden">
+            <span className="rounded-full border border-district-border bg-gray-50 px-3 py-1 text-xs font-medium text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200">
+              Total: {editais.length}
+            </span>
+            <span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700 dark:border-emerald-800 dark:bg-emerald-900/20 dark:text-emerald-200">
+              Abertos: {abertoCount}
+            </span>
+            <span className="rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-xs font-medium text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200">
+              Encerrados: {encerradoCount}
+            </span>
+          </div>
+          <div className="mt-4 hidden gap-3 sm:grid sm:grid-cols-3">
             <div className="rounded-md border border-district-border bg-gray-50 px-3 py-2 dark:border-gray-700 dark:bg-gray-800">
               <p className="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">Total</p>
               <p className="text-lg font-bold text-gray-900 dark:text-gray-100">{editais.length}</p>
@@ -87,22 +100,40 @@ export function HomePage({ agencias, editais, topicos }: HomePageProps) {
           </div>
         </section>
 
-        <SearchInput value={termoBusca} onChange={setTermoBusca} />
-        <FilterBar
-          agenciaOptions={agenciaOptions}
-          topicoOptions={topicoOptions}
-          statusOptions={[
-            { value: "aberto", label: "Aberto" },
-            { value: "encerrado", label: "Encerrado" },
-            { value: "em_breve", label: "Em breve" }
-          ]}
-          selectedAgencia={agenciaId}
-          selectedStatus={status}
-          selectedTopico={topicoId}
-          onAgenciaChange={setAgenciaId}
-          onStatusChange={setStatus}
-          onTopicoChange={setTopicoId}
-        />
+        <section className="rounded-mdx border border-district-border bg-white p-3 shadow-card dark:border-gray-700 dark:bg-gray-900 md:hidden">
+          <button
+            type="button"
+            onClick={() => setIsMobileFiltersOpen((value) => !value)}
+            className="inline-flex h-10 w-full items-center justify-between rounded-md border border-district-border px-3 text-sm font-medium text-gray-700 dark:border-gray-700 dark:text-gray-200"
+          >
+            <span>Filtros e busca</span>
+            <span>{isMobileFiltersOpen ? "Ocultar" : "Mostrar"}</span>
+          </button>
+          {(termoBusca || agenciaId || status || topicoId) && (
+            <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">Filtros ativos aplicados.</p>
+          )}
+        </section>
+
+        <div className={`${isMobileFiltersOpen ? "block" : "hidden"} md:block`}>
+          <SearchInput value={termoBusca} onChange={setTermoBusca} />
+        </div>
+        <div className={`${isMobileFiltersOpen ? "block" : "hidden"} md:block`}>
+          <FilterBar
+            agenciaOptions={agenciaOptions}
+            topicoOptions={topicoOptions}
+            statusOptions={[
+              { value: "aberto", label: "Aberto" },
+              { value: "encerrado", label: "Encerrado" },
+              { value: "em_breve", label: "Em breve" }
+            ]}
+            selectedAgencia={agenciaId}
+            selectedStatus={status}
+            selectedTopico={topicoId}
+            onAgenciaChange={setAgenciaId}
+            onStatusChange={setStatus}
+            onTopicoChange={setTopicoId}
+          />
+        </div>
 
         {isLoading ? (
           <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3" aria-label="Carregando editais">
